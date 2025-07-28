@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: telegram-gpt-bot
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: "gunicorn bot:app"
+    envVars:
+      - key: TELEGRAM_TOKEN
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
