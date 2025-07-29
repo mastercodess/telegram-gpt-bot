@@ -12,7 +12,7 @@ def ask_gpt(prompt):
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Authorization": f"Bearer " + OPENAI_API_KEY,
             "Content-Type": "application/json"
         },
         json={
@@ -20,7 +20,21 @@ def ask_gpt(prompt):
             "messages": [{"role": "user", "content": prompt}]
         }
     )
-    return response.json()['choices'][0]['message']['content'].strip()
+
+    try:
+        data = response.json()
+        print("OpenAI raw response:", data)  # Log it for debugging
+
+        if "choices" in data:
+            return data["choices"][0]["message"]["content"].strip()
+        elif "error" in data:
+            return f"⚠️ OpenAI error: {data['error']['message']}"
+        else:
+            return "⚠️ Unexpected response from OpenAI."
+
+    except Exception as e:
+        print("Error parsing OpenAI response:", str(e))
+        return "⚠️ An error occurred while generating the response."
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
